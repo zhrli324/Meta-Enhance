@@ -6,7 +6,7 @@ from logger import logger
 # from torchsummary import summary
 import numpy as np
 import data
-import GE
+import GE2
 from hypernet import LSTMModel
 import time
 import heapq #
@@ -17,8 +17,8 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 def get_args():
 	parser = argparse.ArgumentParser()
 	parser.register("type", "bool", lambda x : x.lower() == 'true')
-	parser.add_argument("--neg_filename", type=str, default='data/cover_mixbit_news.txt')
-	parser.add_argument("--pos_filename", type=str, default="data/stego_mixbit_news.txt")
+	parser.add_argument("--neg_filename", type=str, default='data/cover_mixbit_movie.txt')
+	parser.add_argument("--pos_filename", type=str, default="data/stego_mixbit_movie.txt")
 	parser.add_argument("--epoch", type=int, default=50)  # default=100
 	parser.add_argument("--stop", type=int, default=50)
 	parser.add_argument("--max_length", type=int, default=None)
@@ -81,7 +81,7 @@ def main(data_helper, hyper_train):
 	hyper_model = LSTMModel(FEATURE_DIM, 32, FEATURE_DIM)
 	hyper_model.to(device)
 	hyper_optimizer = torch.optim.Adam(hyper_model.parameters(), LEARNING_RATE, weight_decay=1e-6)  # 优化函数
-	model = GE.ge(
+	model = GE2.ge(
 		cell=CELL,
 		vocab_size=data_helper.vocab_size,
 		embed_size=EMBED_SIZE,
@@ -175,8 +175,8 @@ def main(data_helper, hyper_train):
 
 		if (epoch + 1) % SAVE_EVERY == 0:
 			print('saving parameters')
-			os.makedirs('models', exist_ok=True)
-			torch.save(model.state_dict(), 'models/GE-' + str(epoch) + '.pkl')
+			os.makedirs('parameters', exist_ok=True)
+			torch.save(model.state_dict(), 'parameters/GE-' + str(epoch) + '.pkl')
 # 	logger.info('best acc: {:.4f}'.format(best_acc))
 # 	print('best acc: {:.4f}'.format(best_acc))
 # 	return best_acc'
@@ -250,14 +250,14 @@ def main(data_helper, hyper_train):
 				early_stop += 1
 			if early_stop >= STOP:
 				# logger.info('best acc: {:.4f}'.format(best_acc))
-				print('best acc: {:.4f}, pre {:.4f}, recall {:.4f}, F1 {:.4f}'.format(best_acc, precison, recall))
+				# print('best acc: {:.4f}, pre {:.4f}, recall {:.4f}, F1 {:.4f}'.format(best_acc, precison, recall))
 				# return best_acc
 				return best_acc, precison, recall # add by xq 22.9.29
 
 			if (epoch + 1) % SAVE_EVERY == 0:
 				print('saving parameters')
-				os.makedirs('models', exist_ok=True)
-				torch.save(hyper_model.state_dict(), 'models/hyper-lstm-' + str(epoch) + '.pkl')
+				os.makedirs('parameters', exist_ok=True)
+				torch.save(hyper_model.state_dict(), 'parameters/hyper-lstm-' + str(epoch) + '.pkl')
 
 		print('best acc: {:.4f}, pre {:.4f}, recall {:.4f}'.format(best_acc, precison, recall))
 		# torch.save(model.state_dict(), './train_epoch200_.pth')
