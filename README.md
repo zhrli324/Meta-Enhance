@@ -19,3 +19,7 @@ Run the quickstart
 ```bash
 python run.py
 ```
+
+## Acknowledgment
+
+Our code is based on [``Linguistic Steganalysis by Enhancing and Integrating Local and Global Features``](https://ieeexplore.ieee.org/document/10021965).
